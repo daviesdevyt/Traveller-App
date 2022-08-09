@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "targets": [
+      "traveller"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "client": {
+    "source": "client"
+  }
+}

@@ -1,0 +1,32 @@
+<script>
+  var auth = catalyst.auth.isUserAuthenticated()
+  auth.then(result => {
+    console.log(result);
+    document.querySelector("#login").style.display = 'none'
+    var signin = document.querySelector("[sign-in]");
+    signin.style.display = "block"
+  })
+  .catch((err) => {
+    catalyst.auth.signIn("login");
+  })
+</script>
+<head>
+  <style>
+    #login {
+      height: 300px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+    input {
+      border: 3px dotted black;
+    }
+    div[sign-in]{
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<div sign-in align="center" style="display: none;">
+  <h3>You are already signed in</h3>
+  <a href="javascript:catalyst.auth.signOut(document.URL);" id="logout">Logout?</a>
+</div>
+<div id="login"></div>

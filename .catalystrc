@@ -1,0 +1,29 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "7304000000004167",
+      "name": "traveller",
+      "domain": {
+        "id": "10046576346",
+        "name": "traveller-785921875.development"
+      },
+      "env": [
+        {
+          "idx": 1,
+          "id": "785921875",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}
