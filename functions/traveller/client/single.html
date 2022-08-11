@@ -2,6 +2,7 @@
   <link href="/server/traveller/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
   <link href="/server/traveller/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="/server/traveller/css/style.css">
+  <script src="/server/traveller/js/layout.js"></script>
 </head>
 <!-- Header Start -->
 <div class="container-fluid page-header">
@@ -29,31 +30,34 @@
         <div class="pb-3">
           <div class="blog-item">
             <div class="position-relative">
-              <img class="img-fluid w-100" src="/server/traveller/<%= product.mainImg %>" alt="" />
+              <img class="img-fluid w-100" src="/server/traveller/<%= package.mainImg %>" alt="" />
               <div class="blog-date">
-                <h6 class="font-weight-bold mb-n1">01</h6>
-                <small class="text-white text-uppercase">Jan</small>
+                <% var date = new Date(package.travel_date) %>
+                <h6 class="font-weight-bold mb-n1"><%= date.getDate() %>  </h6>
+                <small class="text-white text-uppercase"><%= date.toLocaleString('default', { month: 'long' }) %></small>
               </div>
             </div>
           </div>
           <div class="bg-white mb-3" style="padding: 30px">
             <div class="d-flex mb-4 p-4">
-              <button class="btn btn-success">Book now</button>
-              <span class="p-2">$<%= product.price %></span>
+              <a href="/server/traveller/bookpackage?id=<%= package.ROWID %>">
+                <button class="btn btn-success">Book now</button>
+              </a>
+              <span class="p-2">$<%= package.price %></span>
             </div>
             <h2 class="mb-3">
-              <%= product.name %>
+              <%= package.name %>
             </h2>
             <p>
-              <%= product.desc1 %>
+              <%= package.desc1 %>
             </p>
-            <h4 class="mb-3">Est dolor lorem et ea</h4>
+            <h4 class="mb-3"><%= %></h4>
             <img
               class="img-fluid w-50 float-left mr-4 mb-2"
-              src="/server/traveller/<%= product.subImg %>"
+              src="/server/traveller/<%= package.subImg %>"
             />
             <p>
-              <%= product.desc2 %>
+              <%= package.desc2 %>
             </p>
           </div>
         </div>

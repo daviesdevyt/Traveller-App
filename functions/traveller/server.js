@@ -87,8 +87,11 @@ app.get("/sign-in", (req, res) => {
 	res.render("signin")
 })
 
-app.get("/packages", (req, res) => {
-	res.render("package")
+app.get("/packages", async (req, res) => {
+	utils.initialize(req, true)
+	var packages = await utils.queryTable(`select * from Package`)
+	console.log(packages)
+	res.render("package", {packages})
 })
 
 app.get("/contact", (req, res) => {
@@ -98,13 +101,20 @@ app.get("/contact", (req, res) => {
 
 app.get("/single/:prod_id", async (req, res) => {
 	utils.initialize(req, true)
-	var product = await utils.queryTable(`select * from Product where Product.ROWID='${req.params.prod_id}'`)
-	res.render("single", { product:product[0].Product })
+	var package = await utils.queryTable(`select * from Package where ROWID=${req.params.prod_id}`)
+	res.render("single", { package:package[0].Package })
+})
+
+app.get("/bookpackage", async (req, res) => {
+	var package_id = req.query.id
+	utils.initialize(req, true)
+	var package = await utils.queryTable(`select * from Package where ROWID=${req.params.prod_id}`)
+	res.render("single", { package:package[0].Package })
 })
 
 app.post("/contact", async (req, res) => {
 	utils.initialize(req, true)
-	await utils.addRowInTable("ContactMessages", { name: req.body.name, email: req.body.email, subject: req.body.subject, message: req.body.message })
+	await utils.addRowInTable("ContactMessage", { name: req.body.name, email: req.body.email, subject: req.body.subject, message: req.body.message })
 	.then((row) => {
 		req.flash("msg", ["Message sent!", "success"])
 	}).catch(err => {
@@ -121,18 +131,15 @@ app.get("/admin", (req, res) => {
 
 app.post("/admin", upload.array("productImage", 2), async (req, res) => {
 	utils.initialize(req, true)
-	prodName = req.body.name
-	desc1 = req.body.desc1
-	desc2 = req.body.desc2
-	price = req.body.price
 	mainImg = req.files[0].filename
 	subImg = req.files[1].filename
-	await utils.addRowInTable("Product", {name: prodName, desc1, desc2, mainImg, subImg, price})
+	console.log()
+	await utils.addRowInTable("Package", {...req.body, mainImg, subImg})
 	.then(row => {
-		req.flash("msg", ["Product added", "success"])
+		req.flash("msg", ["Package added", "success"])
 	})
 	.catch(err => {
-		req.flash("msg", ["Product not added", "danger"])
+		req.flash("msg", ["Package not added", "danger"])
 		console.log("Row not inserted error: "+err)
 	})
 	res.json("Worked")
