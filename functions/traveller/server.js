@@ -15,8 +15,8 @@ const storage = multer.diskStorage({
 	filename: (req, file, cb) => {
 		fname = file.originalname.split(".")
 		ext = fname[fname.length - 1]
-		var hsh = md5(file.originalname+Math.random().toString()+new Date().toISOString())
-		cb(null, hsh+"."+ext)
+		var hsh = md5(file.originalname + Math.random().toString() + new Date().toISOString())
+		cb(null, hsh + "." + ext)
 	}
 })
 const fileFilter = (req, file, cb) => {
@@ -24,7 +24,7 @@ const fileFilter = (req, file, cb) => {
 	else cb(null, false)
 
 }
-const upload = multer({storage: storage, fileFilter:fileFilter})
+const upload = multer({ storage: storage, fileFilter: fileFilter })
 
 
 app.use(express.json());
@@ -36,7 +36,7 @@ app.use(session({
 	saveUninitialized: true
 }));
 app.use(flash());
-var catalyst = require('zcatalyst-sdk-node');
+const catalyst = require('zcatalyst-sdk-node');
 
 app.engine('.html', require('ejs').__express);
 app.set("view engine", "html")
@@ -46,6 +46,19 @@ app.use(expressLayouts)
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static("public"))
 app.use(express.static("../../uploads"))
+
+async function login_required(req, res, next) {
+	var c = catalyst.initialize(req)
+	let userManagement = c.userManagement();
+	let userPromise = await userManagement.getCurrentUser();
+	if (userPromise != null) {
+		req['user'] = userPromise
+		next()
+	}
+	else{
+		res.render("signup")
+	}
+}
 
 app.get("/", (req, res) => {
 	res.render("index")
@@ -91,7 +104,7 @@ app.get("/packages", async (req, res) => {
 	utils.initialize(req, true)
 	var packages = await utils.queryTable(`select * from Package`)
 	console.log(packages)
-	res.render("package", {packages})
+	res.render("package", { packages })
 })
 
 app.get("/contact", (req, res) => {
@@ -102,25 +115,29 @@ app.get("/contact", (req, res) => {
 app.get("/single/:prod_id", async (req, res) => {
 	utils.initialize(req, true)
 	var package = await utils.queryTable(`select * from Package where ROWID=${req.params.prod_id}`)
-	res.render("single", { package:package[0].Package })
+	res.render("single", { package: package[0].Package })
 })
 
-app.get("/bookpackage", async (req, res) => {
-	var package_id = req.query.id
+
+app.get("/bookpackage", login_required, async (req, res) => {
+	var pckge_id = req.query.id
 	utils.initialize(req, true)
-	var package = await utils.queryTable(`select * from Package where ROWID=${req.params.prod_id}`)
-	res.render("single", { package:package[0].Package })
+	var package = await utils.queryTable(`select count(name) from Package where ROWID=${pckge_id}`).catch(err => res.status(404).send("Package not found"))
+	if (package[0].Package.name != 1) return res.json("Invalid ID")
+	utils.addRowInTable("Cart", {user_id:req.user.user_id, package_id:pckge_id})
+	res.redirect(req.get("referrer"))
 })
+
 
 app.post("/contact", async (req, res) => {
 	utils.initialize(req, true)
 	await utils.addRowInTable("ContactMessage", { name: req.body.name, email: req.body.email, subject: req.body.subject, message: req.body.message })
-	.then((row) => {
-		req.flash("msg", ["Message sent!", "success"])
-	}).catch(err => {
-		req.flash("msg", ["Message was not sent :(", "danger"])
-		console.log("rowData insertion failed " + err);
-	});
+		.then((row) => {
+			req.flash("msg", ["Message sent!", "success"])
+		}).catch(err => {
+			req.flash("msg", ["Message was not sent :(", "danger"])
+			console.log("rowData insertion failed " + err);
+		});
 	res.redirect("contact")
 })
 
@@ -134,14 +151,14 @@ app.post("/admin", upload.array("productImage", 2), async (req, res) => {
 	mainImg = req.files[0].filename
 	subImg = req.files[1].filename
 	console.log()
-	await utils.addRowInTable("Package", {...req.body, mainImg, subImg})
-	.then(row => {
-		req.flash("msg", ["Package added", "success"])
-	})
-	.catch(err => {
-		req.flash("msg", ["Package not added", "danger"])
-		console.log("Row not inserted error: "+err)
-	})
+	await utils.addRowInTable("Package", { ...req.body, mainImg, subImg })
+		.then(row => {
+			req.flash("msg", ["Package added", "success"])
+		})
+		.catch(err => {
+			req.flash("msg", ["Package not added", "danger"])
+			console.log("Row not inserted error: " + err)
+		})
 	res.json("Worked")
 })
 
