@@ -63,7 +63,7 @@ async function login_required(req, res, next) {
 app.get("/", async (req, res) => {
 	utils.initialize(req, true)
 	var packages = await utils.queryTable(`select * from Package`)
-	res.render("index", {packages})
+	res.render("index", { packages })
 })
 
 app.get("/service", (req, res) => {
@@ -87,7 +87,7 @@ app.get("/cart", login_required, async (req, res) => {
 		query = " WHERE "
 		for (let i = 0; i < bookings.length; i++) {
 			let item = bookings[i].Cart
-			let and = i == bookings.length-1 ? "" : " OR "
+			let and = i == bookings.length - 1 ? "" : " OR "
 			query += "ROWID=" + item.package_id + and
 		}
 		console.log(query)
@@ -143,9 +143,10 @@ app.get("/contact", (req, res) => {
 })
 
 app.get("/single/:prod_id", async (req, res) => {
+	message = req.flash('msg')
 	utils.initialize(req, true)
 	var package = await utils.queryTable(`select * from Package where ROWID=${req.params.prod_id}`)
-	res.render("single", { package: package[0].Package })
+	res.render("single", { package: package[0].Package, message })
 })
 
 
@@ -153,9 +154,13 @@ app.get("/bookpackage", login_required, async (req, res) => {
 	var pckge_id = req.query.id
 	if (pckge_id === undefined) return res.redirect(req.get("referrer"))
 	utils.initialize(req, true)
-	var package = await utils.queryTable(`select count(name) from Package where ROWID=${pckge_id}`)
-	if (package[0].Package.name != 1) return res.json("Invalid ID")
-	utils.addRowInTable("Cart", { user_id: req.user.user_id, package_id: pckge_id })
+	var booking = await utils.queryTable(`select ROWID from Cart where user_id=${req.user.user_id} and package_id=${pckge_id}`)
+	if (booking.length < 1) {
+		await utils.addRowInTable("Cart", { user_id: req.user.user_id, package_id: pckge_id })
+			.then(row => req.flash("msg", ["Added to cart!", "success"]))
+			.catch(err => req.flash("msg", ["Wasn't able to be added to cart", "danger"]))
+	}
+	else req.flash("msg", ["Item is already in cart", "danger"])
 	res.redirect(req.get("referrer"))
 })
 

@@ -6,6 +6,14 @@
             <h1>Your bookings</h1>
         </div>
         <div class="row">
+            <% if (bookings.length == 0){ %>
+                <div class="w-100 row justify-content-center">
+                    <p class="p-2">Nothing here !</p>                    
+                    <a href="/server/traveller/packages">
+                        <button class="btn btn-outline-primary">Go shopping</button>
+                    </a>
+                </div>
+            <% } %>
             <% bookings.forEach(book => { var booking = book.Package %>
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="package-item bg-white mb-2">
