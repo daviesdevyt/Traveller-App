@@ -1,0 +1,52 @@
+
+<!-- Contact Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="text-center mb-3 pb-3">
+            <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Admin Page</h6>
+            <h1>Add product</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-form bg-white" style="padding: 30px;">
+                    <div class="alert alert-<%= message[1] %>" align="center"><%= message[0] %></div>
+                    <form name="sentMessage" id="contactForm" method="post">
+                        <div class="form-row">
+                            <div class="control-group col-sm-6">
+                                <input type="text" class="form-control p-4" name="name" id="name" placeholder="Product Name"
+                                    required="required" data-validation-required-message="Please enter a name" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group col-sm-6">
+                                <input type="email" class="form-control p-4" name="subheading" id="subheading" placeholder="Sub heading"
+                                    required="required" data-validation-required-message="Please enter a sub heading" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <textarea class="form-control py-3 px-4" rows="5" name="desc1" id="desc1" placeholder="Description 1"
+                                required="required"
+                                data-validation-required-message="Enter description 1"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <textarea class="form-control py-3 px-4" rows="5" name="desc2" id="desc2" placeholder="Description 2"
+                                required="required"
+                                data-validation-required-message="Please enter your message"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="file" class="form-control p-4" name="productImages" id="images" placeholder="Subject" multiple
+                                required="required" data-validation-required-message="Image files" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-primary py-3 px-4" type="submit" id="sendMessageButton">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
