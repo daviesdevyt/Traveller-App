@@ -16,10 +16,13 @@
                             <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i><%= booking.duration %> days</small>
                             <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
                         </div>
-                        <a class="h5 text-decoration-none" href="/server/traveller/single/<%=booking.ROWID%>"><%= booking.name %></a>
+                        <a class="h5 text-decoration-none" href="single/<%=booking.ROWID%>"><%= booking.name %></a>
                         <div class="border-top mt-4 pt-4">
                             <div class="d-flex justify-content-between">
                                 <h5 class="m-0">$<%= booking.price %></h5>
+                                <a href="deletebooking?id=<%=booking.ROWID%>">
+                                    <h6 class="m-0"><i class="fas fa-trash-alt text-danger mr-2"></i></h6>
+                                </a>
                             </div>
                         </div>
                     </div>

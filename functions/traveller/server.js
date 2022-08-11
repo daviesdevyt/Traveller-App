@@ -70,6 +70,14 @@ app.get("/service", (req, res) => {
 	res.render("service")
 })
 
+app.get("/deletebooking", login_required, async (req, res) => {
+	var pckge_id = req.query.id
+	if (pckge_id === undefined) return res.redirect(req.get("referrer"))
+	utils.initialize(req, true)
+	await utils.queryTable(`DELETE FROM Cart WHERE user_id=${req.user.user_id} AND package_id=${req.query.id}`)
+	res.redirect(req.get("referrer"))
+})
+
 app.get("/cart", login_required, async (req, res) => {
 	utils.initialize(req)
 	a = { mani: "mani", other: "other" }
@@ -82,9 +90,12 @@ app.get("/cart", login_required, async (req, res) => {
 			let and = i == bookings.length-1 ? "" : " OR "
 			query += "ROWID=" + item.package_id + and
 		}
+		console.log(query)
+		bookings = await utils.queryTable(`select * from Package${query}`)
 	}
-	console.log(query)
-	bookings = await utils.queryTable(`select * from Package${query}`)
+	else {
+		bookings = []
+	}
 	res.render("cart", { bookings })
 })
 
@@ -140,6 +151,7 @@ app.get("/single/:prod_id", async (req, res) => {
 
 app.get("/bookpackage", login_required, async (req, res) => {
 	var pckge_id = req.query.id
+	if (pckge_id === undefined) return res.redirect(req.get("referrer"))
 	utils.initialize(req, true)
 	var package = await utils.queryTable(`select count(name) from Package where ROWID=${pckge_id}`)
 	if (package[0].Package.name != 1) return res.json("Invalid ID")
