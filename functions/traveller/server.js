@@ -7,6 +7,7 @@ const expressLayouts = require("express-ejs-layouts")
 const utils = require("./utils.js")
 const multer = require("multer")
 const md5 = require("blueimp-md5")
+const catalyst = require('zcatalyst-sdk-node');
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
@@ -36,7 +37,6 @@ app.use(session({
 	saveUninitialized: true
 }));
 app.use(flash());
-const catalyst = require('zcatalyst-sdk-node');
 
 app.engine('.html', require('ejs').__express);
 app.set("view engine", "html")
@@ -55,17 +55,37 @@ async function login_required(req, res, next) {
 		req['user'] = userPromise
 		next()
 	}
-	else{
-		res.render("signup")
+	else {
+		res.redirect("signup")
 	}
 }
 
-app.get("/", (req, res) => {
-	res.render("index")
+app.get("/", async (req, res) => {
+	utils.initialize(req, true)
+	var packages = await utils.queryTable(`select * from Package`)
+	res.render("index", {packages})
 })
 
 app.get("/service", (req, res) => {
 	res.render("service")
+})
+
+app.get("/cart", login_required, async (req, res) => {
+	utils.initialize(req)
+	a = { mani: "mani", other: "other" }
+	var bookings = await utils.queryTable(`select package_id from Cart where user_id=${req.user.user_id}`)
+	var query = ""
+	if (bookings.length > 0) {
+		query = " WHERE "
+		for (let i = 0; i < bookings.length; i++) {
+			let item = bookings[i].Cart
+			let and = i == bookings.length-1 ? "" : " OR "
+			query += "ROWID=" + item.package_id + and
+		}
+	}
+	console.log(query)
+	bookings = await utils.queryTable(`select * from Package${query}`)
+	res.render("cart", { bookings })
 })
 
 app.get("/sign-up", (req, res) => {
@@ -96,14 +116,13 @@ app.post("/sign-up", async (req, res) => {
 	res.redirect(req.get("referrer"))
 })
 
-app.get("/sign-in", (req, res) => {
-	res.render("signin")
+app.get("/login", (req, res) => {
+	res.render("login")
 })
 
 app.get("/packages", async (req, res) => {
 	utils.initialize(req, true)
 	var packages = await utils.queryTable(`select * from Package`)
-	console.log(packages)
 	res.render("package", { packages })
 })
 
@@ -122,9 +141,9 @@ app.get("/single/:prod_id", async (req, res) => {
 app.get("/bookpackage", login_required, async (req, res) => {
 	var pckge_id = req.query.id
 	utils.initialize(req, true)
-	var package = await utils.queryTable(`select count(name) from Package where ROWID=${pckge_id}`).catch(err => res.status(404).send("Package not found"))
+	var package = await utils.queryTable(`select count(name) from Package where ROWID=${pckge_id}`)
 	if (package[0].Package.name != 1) return res.json("Invalid ID")
-	utils.addRowInTable("Cart", {user_id:req.user.user_id, package_id:pckge_id})
+	utils.addRowInTable("Cart", { user_id: req.user.user_id, package_id: pckge_id })
 	res.redirect(req.get("referrer"))
 })
 

@@ -3,7 +3,7 @@
   auth.then(result => {
     console.log(result);
     document.querySelector("#login").style.display = 'none'
-    var signin = document.querySelector("[sign-in]");
+    var signin = document.querySelector("[login]");
     signin.style.display = "block"
   })
   .catch((err) => {
@@ -20,13 +20,13 @@
     input {
       border: 3px dotted black;
     }
-    div[sign-in]{
+    div[login]{
       margin-top: 50px;
     }
   </style>
 </head>
-<div sign-in align="center" style="display: none;">
-  <h3>You are already signed in</h3>
+<div login align="center" style="display: none;">
+  <h3>You are already logged in</h3>
   <a href="javascript:catalyst.auth.signOut(document.URL);" id="logout">Logout?</a>
 </div>
 <div id="login"></div>
