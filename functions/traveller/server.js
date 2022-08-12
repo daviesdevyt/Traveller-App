@@ -182,11 +182,10 @@ app.get("/admin", (req, res) => {
 	res.render("admin", { message })
 })
 
-app.post("/admin", upload.array("productImage", 2), async (req, res) => {
+app.post("/admin", upload.array("packageImage", 2), async (req, res) => {
 	utils.initialize(req, true)
 	mainImg = req.files[0].filename
 	subImg = req.files[1].filename
-	console.log()
 	await utils.addRowInTable("Package", { ...req.body, mainImg, subImg })
 		.then(row => {
 			req.flash("msg", ["Package added", "success"])
@@ -195,7 +194,7 @@ app.post("/admin", upload.array("productImage", 2), async (req, res) => {
 			req.flash("msg", ["Package not added", "danger"])
 			console.log("Row not inserted error: " + err)
 		})
-	res.json("Worked")
+	res.redirect("admin")
 })
 
 

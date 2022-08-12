@@ -10,33 +10,55 @@
             <div class="col-lg-8">
                 <div class="contact-form bg-white" style="padding: 30px;">
                     <div class="alert alert-<%= message[1] %>" align="center"><%= message[0] %></div>
-                    <form name="sentMessage" id="contactForm" method="post">
+                    <form name="sentMessage" id="contactForm" method="post" enctype="multipart/form-data">
+                        <div class="control-group">
+                            <input type="text" class="form-control p-4" name="name" id="name" placeholder="Package Name"
+                                required="required" data-validation-required-message="Please enter a name" />
+                            <p class="help-block text-danger"></p>
+                        </div>
                         <div class="form-row">
                             <div class="control-group col-sm-6">
-                                <input type="text" class="form-control p-4" name="name" id="name" placeholder="Package Name"
-                                    required="required" data-validation-required-message="Please enter a name" />
+                                <input type="text" class="form-control p-4" name="price" id="price" placeholder="Price"
+                                    required="required" data-validation-required-message="Please enter a price" />
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="control-group col-sm-6">
-                                <input type="email" class="form-control p-4" name="subheading" id="subheading" placeholder="Sub heading"
-                                    required="required" data-validation-required-message="Please enter a sub heading" />
+                                <input type="number" class="form-control p-4" name="duration" id="duration" placeholder="Duration (days)"
+                                    required="required" data-validation-required-message="Please enter a Duration" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="control-group col-sm-6">
+                                <input type="date" class="form-control p-4" name="travel_date" id="date" placeholder="Travel Date"
+                                    required="required" data-validation-required-message="Please enter a travel date" />
+                                <p class="help-block text-danger"></p>
+                            </div>
+                            <div class="control-group col-sm-6">
+                                <input type="text" class="form-control p-4" name="location" id="location" placeholder="Location"
+                                    required="required" data-validation-required-message="Please enter a Location" />
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
                         <div class="control-group">
                             <textarea class="form-control py-3 px-4" rows="5" name="desc1" id="desc1" placeholder="Description 1"
                                 required="required"
-                                data-validation-required-message="Enter description 1"></textarea>
+                                data-validation-required-message="Enter description 1" >Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum sint nam, voluptate quia, odit asperiores vero, quasi dignissimos delectus porro consequatur? Facere velit modi optio necessitatibus tempora sit blanditiis quas!</textarea>
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
                             <textarea class="form-control py-3 px-4" rows="5" name="desc2" id="desc2" placeholder="Description 2"
                                 required="required"
-                                data-validation-required-message="Please enter your message"></textarea>
+                                data-validation-required-message="Please enter your message">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum sint nam, voluptate quia, odit asperiores vero, quasi dignissimos delectus porro consequatur? Facere velit modi optio necessitatibus tempora sit blanditiis quas!</textarea>
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
-                            <input type="file" class="form-control p-4" name="productImages" id="images" placeholder="Subject" multiple
+                            <input type="file" class="form-control p-4" name="packageImage" id="images" placeholder="Subject" accept="image/*"
+                                required="required" data-validation-required-message="Image files" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="file" class="form-control p-4" name="packageImage" id="images" placeholder="Subject" accept="image/*"
                                 required="required" data-validation-required-message="Image files" />
                             <p class="help-block text-danger"></p>
                         </div>
