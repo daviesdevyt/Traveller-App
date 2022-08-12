@@ -1,5 +1,5 @@
 {
-    "name": "Traveller",
+    "name": "sampleApp",
     "version": "0.0.1",
     "homepage": "/server/traveller",
     "login_redirect":"/server/traveller/"
