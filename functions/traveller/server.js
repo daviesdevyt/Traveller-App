@@ -6,6 +6,7 @@ const flash = require('connect-flash');
 const expressLayouts = require("express-ejs-layouts")
 const utils = require("./utils.js")
 const catalyst = require('zcatalyst-sdk-node');
+const axios = require('axios');
 require("dotenv").config()
 
 
@@ -58,10 +59,16 @@ app.get("/deletebooking", login_required, async (req, res) => {
 	await utils.queryTable(`DELETE FROM Cart WHERE user_id=${req.user.user_id} AND package_id=${req.query.id}`)
 	res.redirect(req.get("referrer"))
 })
+app.get("/deleteorder", login_required, async (req, res) => {
+	var pckge_id = req.query.id
+	if (pckge_id === undefined) return res.redirect(req.get("referrer"))
+	utils.initialize(req, true)
+	await utils.queryTable(`DELETE FROM Orders WHERE user_id=${req.user.user_id} AND package_id=${req.query.id}`)
+	res.redirect(req.get("referrer"))
+})
 
 app.get("/cart", login_required, async (req, res) => {
 	utils.initialize(req)
-	a = { mani: "mani", other: "other" }
 	var bookings = await utils.queryTable(`select package_id from Cart where user_id=${req.user.user_id}`)
 	var query = ""
 	if (bookings.length > 0) {
@@ -77,6 +84,26 @@ app.get("/cart", login_required, async (req, res) => {
 		bookings = []
 	}
 	res.render("cart", { bookings })
+})
+
+app.get("/orders", login_required, async (req, res) => {
+	utils.initialize(req)
+	var bookings = await utils.queryTable(`select package_id from Orders where user_id=${req.user.user_id}`)
+	var query = ""
+	console.log(bookings)
+	if (bookings.length > 0) {
+		query = " WHERE "
+		for (let i = 0; i < bookings.length; i++) {
+			let item = bookings[i].Orders
+			let and = i == bookings.length - 1 ? "" : " OR "
+			query += "ROWID=" + item.package_id + and
+		}
+		bookings = await utils.queryTable(`select * from Package${query}`)
+	}
+	else {
+		bookings = []
+	}
+	res.render("orders", { bookings })
 })
 
 app.get("/sign-up", (req, res) => {
@@ -157,7 +184,7 @@ app.post("/contact", async (req, res) => {
 	res.redirect("contact")
 })
 
-app.get('/verify_transaction', async (req, res) => {
+app.get('/verify_transaction', login_required, async (req, res) => {
 	axios({
 	  method: "GET",
 	  url: 'https://api.paystack.co/transaction/verify/'+req.query.reference,
@@ -165,30 +192,19 @@ app.get('/verify_transaction', async (req, res) => {
 		Authorization: 'Bearer '+process.env.PAYSTACK_PRIVATE_KEY
 	  }
 	}).then(async resp => {
-	  var customer = resp.data.data.customer
-	  res.json(resp.data.data)
+	  utils.initialize(req)
+	  packages = await utils.queryTable(`select package_id from Cart where user_id=${req.user.user_id}`)
+	  var values = ""
+	  for (let i=0;i<packages.length;i++){
+		  values += `(${req.user.user_id}, ${packages[i].Cart.package_id})`
+		  if (i != packages.length-1) values += ","
+	  }
+	  utils.queryTable(`insert into Orders (user_id, package_id) values ${values}`)
+	  .then(async row => {
+		await utils.queryTable(`delete from Cart where user_id=${req.user.user_id}`)
+	  })
+	  res.json({})
 	})
-  })
-
-app.get("/admin", (req, res) => {
-	message = req.flash("msg")
-	res.render("admin", { message })
 })
-
-app.post("/admin", upload.array("packageImage", 2), async (req, res) => {
-	utils.initialize(req, true)
-	mainImg = req.files[0].filename
-	subImg = req.files[1].filename
-	await utils.addRowInTable("Package", { ...req.body, mainImg, subImg })
-		.then(row => {
-			req.flash("msg", ["Package added", "success"])
-		})
-		.catch(err => {
-			req.flash("msg", ["Package not added", "danger"])
-			console.log("Row not inserted error: " + err)
-		})
-	res.redirect("admin")
-})
-
 
 module.exports = app;

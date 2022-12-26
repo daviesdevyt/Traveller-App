@@ -4,21 +4,20 @@
 <div class="container-fluid py-5">
     <div class="container pt-5 pb-3">
         <div class="text-center mb-3 pb-3">
-            <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Cart</h6>
-            <h1>Your bookings</h1>
+            <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">ORDERS</h6>
+            <h1>Your current orders</h1>
         </div>
         <div class="row">
             <% if (bookings.length == 0){ %>
                 <div class="w-100 row justify-content-center">
                     <p class="p-2">Nothing here !</p>                    
-                    <a href="packages">
+                    <a href="/server/traveller/packages">
                         <button class="btn btn-outline-primary">Go shopping</button>
                     </a>
                 </div>
             <% } %>
-            <%
-            var total = 0; 
-            bookings.forEach(book => { var booking = book.Package; total += booking.price; %>
+            <% 
+            bookings.forEach(book => { var booking = book.Package; %>
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="package-item bg-white mb-2">
                     <img class="img-fluid" src="/server/traveller/<%= booking.mainImg %>" alt="Image">
@@ -32,7 +31,7 @@
                         <div class="border-top mt-4 pt-4">
                             <div class="d-flex justify-content-between">
                                 <h5 class="m-0">$<%= booking.price %></h5>
-                                <a href="deletebooking?id=<%=booking.ROWID%>">
+                                <a href="deleteorder?id=<%=booking.ROWID%>">
                                     <h6 class="m-0"><i class="fas fa-trash-alt text-danger mr-2"></i></h6>
                                 </a>
                             </div>
@@ -42,15 +41,6 @@
             </div>
             <% }) %>
         </div>
-    </div>
-    <div class="text-center">
-        <% if (bookings.length != 0){ %>
-        <div class="text-center mb-3 pb-3">
-            <h5 class="m-0">Total: $<total><%= total %></total></h5>
-        </div>
-        <button class="btn btn-primary py-3 px-4" id="paymentForm">Pay</button><br><br>
-        <% } %>
-        <a href="/server/traveller/orders">See orders >>></a>
     </div>
 </div>
 <!-- Packages End -->

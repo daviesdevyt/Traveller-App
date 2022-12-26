@@ -20,6 +20,7 @@ $(document).ready(function () {
           method: 'get',
           success: function (response) {
             console.log(response)
+            window.location = "/server/traveller/orders"
             // the transaction status is in response.data.status
           }
         });
