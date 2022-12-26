@@ -8,8 +8,8 @@ auth.then(res => {
 })
 
 $(document).ready(function () {
-    async function logout(){
-        await catalyst.auth.signOut(document.URL)
+    function logout(){
+        catalyst.auth.signOut(document.URL)
         .catch(err => console.log(err))
     }
     $("[logout]").click(logout)
