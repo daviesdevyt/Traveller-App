@@ -5,27 +5,8 @@ const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 const expressLayouts = require("express-ejs-layouts")
 const utils = require("./utils.js")
-const multer = require("multer")
-const md5 = require("blueimp-md5")
 const catalyst = require('zcatalyst-sdk-node');
-
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, '../../uploads/')
-	},
-	filename: (req, file, cb) => {
-		fname = file.originalname.split(".")
-		ext = fname[fname.length - 1]
-		var hsh = md5(file.originalname + Math.random().toString() + new Date().toISOString())
-		cb(null, hsh + "." + ext)
-	}
-})
-const fileFilter = (req, file, cb) => {
-	if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") cb(null, true)
-	else cb(null, false)
-
-}
-const upload = multer({ storage: storage, fileFilter: fileFilter })
+require("dotenv").config()
 
 
 app.use(express.json());
@@ -90,7 +71,6 @@ app.get("/cart", login_required, async (req, res) => {
 			let and = i == bookings.length - 1 ? "" : " OR "
 			query += "ROWID=" + item.package_id + and
 		}
-		console.log(query)
 		bookings = await utils.queryTable(`select * from Package${query}`)
 	}
 	else {
@@ -176,6 +156,19 @@ app.post("/contact", async (req, res) => {
 		});
 	res.redirect("contact")
 })
+
+app.get('/verify_transaction', async (req, res) => {
+	axios({
+	  method: "GET",
+	  url: 'https://api.paystack.co/transaction/verify/'+req.query.reference,
+	  headers: {
+		Authorization: 'Bearer '+process.env.PAYSTACK_PRIVATE_KEY
+	  }
+	}).then(async resp => {
+	  var customer = resp.data.data.customer
+	  res.json(resp.data.data)
+	})
+  })
 
 app.get("/admin", (req, res) => {
 	message = req.flash("msg")

@@ -1,5 +1,7 @@
 var auth = catalyst.auth.isUserAuthenticated()
+var user;
 auth.then(res => {
+    user = res.content
     document.getElementById("logout").style.display = 'block'
     document.getElementById("cart").style.display = 'block'
 }).catch(err => {

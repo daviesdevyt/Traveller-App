@@ -1,4 +1,6 @@
 <!-- Packages Start -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="/server/traveller/js/pay.js"></script>
 <div class="container-fluid py-5">
     <div class="container pt-5 pb-3">
         <div class="text-center mb-3 pb-3">
@@ -42,10 +44,10 @@
         </div>
     </div>
     <div class="text-center mb-3 pb-3">
-        <h5 class="m-0">Total: $<%= total %></h5>
+        <h5 class="m-0">Total: $<total><%= total %></total></h5>
     </div>
     <div class="text-center">
-        <button class="btn btn-primary py-3 px-4">Pay</button>
+        <button class="btn btn-primary py-3 px-4" id="paymentForm">Pay</button>
     </div>
 </div>
 <!-- Packages End -->
