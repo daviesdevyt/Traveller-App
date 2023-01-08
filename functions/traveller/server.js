@@ -38,7 +38,7 @@ async function login_required(req, res, next) {
 		next()
 	}
 	else {
-		res.redirect("signup")
+		res.redirect("sign-up")
 	}
 }
 
@@ -168,7 +168,7 @@ app.get("/bookpackage", login_required, async (req, res) => {
 			.catch(err => req.flash("msg", ["Wasn't able to be added to cart", "danger"]))
 	}
 	else req.flash("msg", ["Item is already in cart", "danger"])
-	res.redirect(req.get("referrer"))
+	res.redirect("cart")
 })
 
 
